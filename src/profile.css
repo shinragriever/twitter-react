@@ -1,0 +1,12 @@
+.profileimg{
+    height: 200px; /*container-width*/
+    overflow:hidden; /*hide bounds of image */
+    margin:0;   /*reset margin of figure tag*/
+    display:block; /*remove inline-block spaces*/
+    width:100%; /*make image streatch*/
+    
+ }
+ img{
+     width: 100%;
+     
+ }
