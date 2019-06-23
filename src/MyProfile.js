@@ -7,7 +7,7 @@ class MyProfile extends Component {
     
     render() {
         
-        const {user, userTweets, followers, following} = this.props;
+        const {user, userTweets, followers, following, deleteTweet} = this.props;
         
         return (
             <div className="container mt-5">
@@ -18,7 +18,7 @@ class MyProfile extends Component {
                         <div><Followers followers={followers}></Followers></div>
                         <div><Following following={following}></Following></div>
                         </div>
-                    <div className="col-sm-8"><MyProfileTweets userTweets={userTweets}></MyProfileTweets></div>
+                    <div className="col-sm-8"><MyProfileTweets userTweets={userTweets} avatar={user.avatar} deleteTweet={deleteTweet}></MyProfileTweets></div>
                 </div>
                 
             </div>

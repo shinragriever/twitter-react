@@ -3,6 +3,7 @@ import axios from 'axios';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Homepage from "./Homepage";
 import MyProfile from "./MyProfile";
+import OthersProfile from './OthersProfile';
 import "./login.css";
 
 class App extends React.Component {
@@ -16,7 +17,9 @@ class App extends React.Component {
         login: false,
         userTweets: [],
         followers: [],
-        following: []
+        following: [],
+        followersOther: [],
+        followingOther: []
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -31,13 +34,10 @@ componentWillMount(){
 
 getUsers(){
   axios.get("https://moviedb.jnnck.be/users").then(response => {
-     console.log(response.data)
     this.setState({
      users : response.data,
      user: response.data[0]
    })
-     
-     
  })
 }
 getTweets(){
@@ -52,6 +52,7 @@ getTweets(){
 }
 handleChange(event) {
  const id = event.target.value;
+ // eslint-disable-next-line
 const user = this.state.users.filter(user => user.id == id)[0];
 this.setState({user})
 
@@ -66,11 +67,20 @@ getUserTweets(){
 getFollowers(id){
   
   axios.get("https://moviedb.jnnck.be/users/"+id).then(response => {
-     console.log(response.data)
+     
      this.setState({followers: response.data.followers});
      this.setState({following: response.data.following});
    })
 }
+
+deleteTweet(id){
+  console.log(id)
+  // axios.delete("https://moviedb.jnnck.be/posts/"+id).then(response => 
+  //   console.log(response.data))
+}
+
+
+
 
 
 render(){
@@ -122,7 +132,14 @@ render(){
         <MyProfile user={this.state.user} 
                    userTweets={this.state.userTweets} 
                    followers={this.state.followers} 
-                    following={this.state.following} {...props}></MyProfile></div>} />
+                    following={this.state.following}
+                    deleteTweet={this.deleteTweet} {...props}></MyProfile></div>} />
+      <Route path="/user/:id"
+      render={(props) => <div>
+        <OthersProfile user={this.state.users.filter(user =>{return user.id == props.match.params.id})[0]}
+          tweets={this.state.tweets.filter(tweet => {return tweet.user == props.match.params.id})}
+                      
+                    {...props}></OthersProfile></div>} />
       
     </div>
   </Router>

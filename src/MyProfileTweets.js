@@ -1,8 +1,21 @@
 import React, { Component } from 'react';
-
+import Avatar from "./Avatar";
+import axios from "axios";
 class MyProfileTweets extends Component {
+    
+
+    deleteTweet(id) {
+        this.props.deleteTweet(id);
+    }
+
+
+    
+          
+    
+    
+
     render() {
-        const {userTweets} = this.props;
+        const {userTweets,avatar} = this.props;
         
         return (
             <div className="container">
@@ -11,13 +24,15 @@ class MyProfileTweets extends Component {
                         <div className="card mb-3" key={tweet.id} >
                         <div className="row no-gutters">
                         <div className="col-md-4">
-                            {(tweet.image) ? <img src={tweet.image} className="card-img" alt="..."/> : ""}
+                        <img src={avatar} alt="avatar"/>
                         </div>
                         <div className="col-md-8">
                             <div className="card-body">
                             
                             <p className="card-text">{tweet.message}</p>
+                            {(tweet.image) ? <img src={tweet.image} className="card-img" alt="..."/> : ""}
                             <p className="card-text"><small className="text-muted">{tweet.created_at}</small></p>
+                            <button  onClick={() => this.deleteTweet(tweet.id)}>delete {tweet.id}</button>
                             </div>
                         </div>
                         </div>

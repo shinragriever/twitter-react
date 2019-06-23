@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from "react-router-dom";
 import "./profile.css";
 class Following extends Component {
     render() {
@@ -15,8 +16,9 @@ class Following extends Component {
                             {following.map(follower => (
                                 
                                 <div key={ Math.random()} className="col-md-4 p-1">
+                                    <Link to={"/user/"+follower.id}>
                                 <img src={follower.avatar} alt={follower.firstname}/>
-                                
+                                </Link>
                                 </div>
                             ))}
                         </div>
