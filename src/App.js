@@ -15,15 +15,18 @@ class App extends React.Component {
         user: "",
         tweets: [],
         login: false,
-        userTweets: [],
+        followingTweets: [],
         followers: [],
         following: [],
         followersOther: [],
-        followingOther: []
+        followingOther: [],
+        activeUser: {},
+        follow: []
     }
 
     this.handleChange = this.handleChange.bind(this);
-    this.getUserTweets = this.getUserTweets.bind(this);
+    
+    this.getTweets = this.getTweets.bind(this);
 }
 
 componentWillMount(){
@@ -34,51 +37,113 @@ componentWillMount(){
 
 getUsers(){
   axios.get("https://moviedb.jnnck.be/users").then(response => {
+    
     this.setState({
      users : response.data,
      user: response.data[0]
    })
  })
 }
-getTweets(){
+
+ getTweets(){
+  this.getFollowingTweets();
   axios.get("https://moviedb.jnnck.be/posts").then(response => {
      
      this.setState({
       tweets : response.data
     })
-      
+    const userTweets = this.state.tweets.filter(tweet => {return tweet.user === this.state.user.id});
+  this.setState({userTweets});
+  this.getFollowers(this.state.user.id);
       
   })
+  const following = this.state.following.map(function(item) {
+    return item.id;
+});
+following.push(this.state.user.id);
+var followingTweets = this.state.tweets.filter((e) => following.includes(e.user));
+  this.setState({followingTweets});
 }
+
 handleChange(event) {
  const id = event.target.value;
  // eslint-disable-next-line
 const user = this.state.users.filter(user => user.id == id)[0];
 this.setState({user})
-
 }
 
-getUserTweets(){
-  const userTweets = this.state.tweets.filter(tweet => {return tweet.user === this.state.user.id});
-  this.setState({userTweets});
-  this.getFollowers(this.state.user.id);
+getFollowingTweets(){
+  
+   axios.get("https://moviedb.jnnck.be/users/"+this.state.user.id).then(response => {
+    
+    this.setState({activeUser: response.data})
+  })
 }
 
-getFollowers(id){
+ getFollowers(id){
   
   axios.get("https://moviedb.jnnck.be/users/"+id).then(response => {
      
      this.setState({followers: response.data.followers});
      this.setState({following: response.data.following});
+     const following = response.data.following.map(function(item) {
+      return item.id;});
+      console.log("following:",following);
+   this.setState({follow: following});
    })
+  
 }
 
 deleteTweet(id){
   console.log(id)
-  // axios.delete("https://moviedb.jnnck.be/posts/"+id).then(response => 
-  //   console.log(response.data))
+  axios.delete("https://moviedb.jnnck.be/posts/"+id).then(response=> {
+    
+    
+    this.getTweets();
+  })
+   
+  
 }
 
+addTweet(message, image, user){
+  if(!(message === "")){
+  const tweet = {
+    message : message,
+    image: image,
+    user: user.id
+  }
+  console.log("addTweet",tweet)
+  axios.post("https://moviedb.jnnck.be/posts", tweet).then(response => {
+    this.getTweets();
+    
+    
+  })
+  
+}
+else{
+  console.log('posting failed')
+}
+}
+
+followUser(id, user){
+  console.log("follow",id)
+  console.log(user)
+  axios.post("https://moviedb.jnnck.be/users/"+id+"/follow", {follower: user}).then(response => {
+    console.log(response.data)
+    
+  })
+  
+}
+
+unFollowUser(id,user){
+  console.log("unfollow",id)
+  console.log(user)
+  axios.post("https://moviedb.jnnck.be/users/"+id+"/unfollow", {follower: user}).then(response => {
+    console.log(response.data)
+    
+  })
+  
+}
 
 
 
@@ -100,7 +165,7 @@ render(){
      
     </select>
     <div className="mt-3">
-        <button className="btn btn-info " onClick={(e) => {this.setState({login: !login.value}); this.getUserTweets(); }}>Login</button>
+        <button className="btn btn-info " onClick={(e) => {this.setState({login: !login.value}); this.getTweets(); }}>Login</button>
         </div>
       </div>
      
@@ -125,20 +190,29 @@ render(){
   </div>
 </nav>
       
-<Route exact path="/" render={(props) => <div><Homepage tweets={this.state.tweets} users={users} {...props}></Homepage></div> } />
+<Route exact path="/" render={(props) => <div><Homepage tweets={this.state.tweets}
+                                                         users={this.state.users} addTweet={this.addTweet} 
+                                                         user={this.state.user} 
+                                                         getTweets={this.getTweets} 
+                                                         deleteTweet={this.deleteTweet}
+                                                          {...props}></Homepage></div> } />
       {/* <Route path="/" exact component={Index}/> */}
       <Route path="/myprofile" 
       render={(props) => <div>
         <MyProfile user={this.state.user} 
-                   userTweets={this.state.userTweets} 
+                   userTweets={this.state.userTweets}
+                   getTweets={this.getTweets}
                    followers={this.state.followers} 
                     following={this.state.following}
-                    deleteTweet={this.deleteTweet} {...props}></MyProfile></div>} />
+                    deleteTweet={this.deleteTweet}
+                    
+                     {...props}></MyProfile></div>} />
       <Route path="/user/:id"
       render={(props) => <div>
         <OthersProfile user={this.state.users.filter(user =>{return user.id == props.match.params.id})[0]}
           tweets={this.state.tweets.filter(tweet => {return tweet.user == props.match.params.id})}
-                      
+                    loggedUser={this.state.user.id}  follow={this.state.follow} followUser={this.followUser} unFollowUser={this.unFollowUser} 
+                    getTweets={this.getTweets}
                     {...props}></OthersProfile></div>} />
       
     </div>

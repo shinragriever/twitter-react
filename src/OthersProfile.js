@@ -13,7 +13,7 @@ class OthersProfile extends Component {
             userTweets: [],
             followers: [],
             following: [],
-            
+            follow: []
         }
     
         // this.handleChange = this.handleChange.bind(this);
@@ -28,20 +28,22 @@ class OthersProfile extends Component {
         axios.get("https://moviedb.jnnck.be/users/"+id).then(response => {
             this.setState({followers: response.data.followers});
             this.setState({following: response.data.following});
-           
+            
+            
           })
+          
         };
     render() {
         
-        const {user, tweets} = this.props;
-        console.log(tweets);
+        const {user, tweets, loggedUser,follow, followUser, unFollowUser, getTweets} = this.props;
+        
         
         return (
             <div className="container mt-5">
                  
                  <div className="row">
                      <div className="col-sm-4">
-                         <div><Profile user={user}></Profile></div>
+                         <div><Profile user={user} loggedUser={loggedUser} follow={follow} followUser={followUser} unFollowUser={unFollowUser} getTweets={getTweets}></Profile></div>
                          <div><Followers followers={this.state.followers}></Followers></div>
                          <div><Following following={this.state.following}></Following></div>
                          </div>

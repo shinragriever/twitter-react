@@ -1,25 +1,11 @@
 import React, { Component } from 'react';
 import "./profile.css";
-class Profile extends Component {
-
-    followUser(id, user){
-        this.props.followUser(id, user);
-        this.props.getTweets();
-    }
-    
-    
-    unFollowUser(id, user){
-        this.props.unFollowUser(id, user);
-        this.props.getTweets();
-    }
-    
-
-
-
+class MyProfileDetail extends Component {
     render() {
         const {user, follow, loggedUser} = this.props;
         const g = user.gender;
-       console.log(follow.filter(number => number == user.id).length == 0 );
+        console.log(loggedUser);
+        console.log("profile fllow",follow);
         return (
             <div className="card text-white bg-light text-dark">
                 <div className="profileimg">
@@ -34,11 +20,7 @@ class Profile extends Component {
                         </div>
                         
                     </div>
-                   { follow.filter(number => number == user.id).length == 0 ? <div className="text-right mt-3">
-                        <button className="btn btn-info btn-small" onClick={() => this.followUser(this.props.user.id, loggedUser)}>Follow</button>
-                        </div> : <div className="text-right mt-3">
-                        <button className="btn btn-info btn-small" onClick={() => this.unFollowUser(this.props.user.id, loggedUser)}>Unfollow</button>
-                        </div>}
+                 
                     
                 </div> 
             </div>
@@ -46,4 +28,4 @@ class Profile extends Component {
     }
 }
 
-export default Profile;
+export default MyProfileDetail;
